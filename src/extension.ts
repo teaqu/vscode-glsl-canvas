@@ -135,7 +135,6 @@ function setConfiguration(event: vscode.ConfigurationChangeEvent = null) {
 	}
 	const config = vscode.workspace.getConfiguration('glsl-canvas');
 	// console.log('setConfiguration', config);
-	registerColorFormatter(currentContext);
 	if (!event || event.affectsConfiguration('glsl-canvas.useFormatter')) {
 		if (config['useFormatter'] === true) {
 			registerCodeFormatter(currentContext);
@@ -145,6 +144,9 @@ function setConfiguration(event: vscode.ConfigurationChangeEvent = null) {
 	}
 	if (!event) {
 		return;
+	}
+	if (event.affectsConfiguration('glsl-canvas.useColorPicker')) {
+		registerColorFormatter(currentContext);
 	}
 	if (event.affectsConfiguration('glsl-canvas.doubleSided')) {
 		// console.log('updated');
