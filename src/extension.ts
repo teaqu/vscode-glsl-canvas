@@ -142,11 +142,15 @@ function setConfiguration(event: vscode.ConfigurationChangeEvent = null) {
 			disposeCodeFormatter();
 		}
 	}
+	if (!event || event.affectsConfiguration('glsl-canvas.useColorPicker')) {
+		if (config['useColorPicker'] === true) {
+			registerColorFormatter(currentContext);
+		} else {
+			disposeColorFormatter();
+		}
+	}
 	if (!event) {
 		return;
-	}
-	if (event.affectsConfiguration('glsl-canvas.useColorPicker')) {
-		registerColorFormatter(currentContext);
 	}
 	if (event.affectsConfiguration('glsl-canvas.doubleSided')) {
 		// console.log('updated');

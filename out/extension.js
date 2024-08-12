@@ -9,8 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.activate = activate;
-exports.deactivate = deactivate;
 const vscode = require("vscode");
 // import { ExtensionContext, Uri } from 'vscode';
 const color_provider_1 = require("./glsl/color.provider");
@@ -66,6 +64,7 @@ function activate(context) {
     }));
     */
 }
+exports.activate = activate;
 function onGlslPanelMessage(message) {
     switch (message.command) {
         case 'createShader':
@@ -142,15 +141,20 @@ function setConfiguration(event = null) {
             disposeCodeFormatter();
         }
     }
+    if (!event || event.affectsConfiguration('glsl-canvas.useColorPicker')) {
+        if (config['useColorPicker'] === true) {
+            registerColorFormatter(currentContext);
+        }
+        else {
+            disposeColorFormatter();
+        }
+    }
     if (!event) {
         return;
     }
-    if (event.affectsConfiguration('glsl-canvas.useColorPicker')) {
-        registerColorFormatter(currentContext);
-    }
     if (event.affectsConfiguration('glsl-canvas.doubleSided')) {
         // console.log('updated');
-        if ((0, common_1.currentGlslEditor)()) {
+        if (common_1.currentGlslEditor()) {
             return panel_1.default.render();
         }
     }
@@ -158,7 +162,7 @@ function setConfiguration(event = null) {
         event.affectsConfiguration('glsl-canvas.textures') ||
         event.affectsConfiguration('glsl-canvas.uniforms')) {
         // console.log('updated');
-        if ((0, common_1.currentGlslEditor)()) {
+        if (common_1.currentGlslEditor()) {
             return panel_1.default.update();
         }
     }
@@ -169,7 +173,7 @@ function onDidChangeConfiguration(e) {
 }
 function onDidChangeTextDocument(event) {
     // console.log('onDidChangeTextDocument');
-    const current = (0, common_1.currentGlslDocument)();
+    const current = common_1.currentGlslDocument();
     if (current !== event.document) {
         return; // this is for some other document
     }
@@ -185,7 +189,7 @@ function onDidChangeTextDocument(event) {
     }
 }
 function onDidCloseTextDocument(document) {
-    const current = (0, common_1.currentGlslDocument)();
+    const current = common_1.currentGlslDocument();
     // console.log('onDidCloseTextDocument');
     if (current === document) {
         panel_1.default.update();
@@ -193,7 +197,7 @@ function onDidCloseTextDocument(document) {
 }
 function onDidSaveDocument(document) {
     // console.log('onDidSaveDocument');
-    const current = (0, common_1.currentGlslDocument)();
+    const current = common_1.currentGlslDocument();
     const options = new options_1.default();
     if (current === document && options.refreshOnSave) {
         panel_1.default.update();
@@ -201,7 +205,7 @@ function onDidSaveDocument(document) {
 }
 function onDidChangeActiveTextEditor(editor) {
     // console.log('onDidChangeActiveTextEditor');
-    const current = (0, common_1.currentGlslEditor)();
+    const current = common_1.currentGlslEditor();
     if (current === editor) {
         panel_1.default.update();
         // GlslPanel.rebuild(onGlslPanelMessage);
@@ -275,6 +279,7 @@ function deactivate() {
     disposeDiagnostic();
     disposeSerializer();
 }
+exports.deactivate = deactivate;
 /*
 function onDidChangeTextEditorViewColumn(e: vscode.TextEditorViewColumnChangeEvent) {
     // console.log('onDidChangeTextEditorViewColumn', e.viewColumn.toString());
